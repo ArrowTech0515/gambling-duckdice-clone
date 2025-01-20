@@ -61,19 +61,16 @@ export function RightPanel() {
     };
   
     const handleMainScroll = () => {
-      // Close the panel only if it's open and not actively being used
-      if (showRightPanel) {
-        setShowRightPanel(false);
-      }
-    };
-  
-    // Add event listeners
-    document.addEventListener('mousedown', handleClickOutside);
-    window.addEventListener('resize', handleResize);
-    const mainElement = document.querySelector('main');
-    mainElement?.addEventListener('scroll', handleMainScroll);
-    console.log(isMobile.valueOf())
-  
+      setShowRightPanel(false)
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    window.addEventListener('resize', handleResize)
+    const mainElement = document.querySelector('main')
+    mainElement?.addEventListener('scroll', handleMainScroll)
+
+    handleResize()
+
     return () => {
       clearInterval(timer);
       document.removeEventListener('mousedown', handleClickOutside);
