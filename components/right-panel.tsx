@@ -88,7 +88,7 @@ export function RightPanel() {
 
   const topContent = (
     <div className={`transition-all duration-500 ease-in-out ${showFullContent ? 'opacity-100 max-h-[600px]' : 'opacity-0 max-h-0 overflow-hidden'}`}>
-      <div className="p-4 bg-gray-800 border-b border-gray-700">
+      <div className="p-4 bg-gray-800 border-b border-gray-700 ">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold text-white">Sniper Race</h3>
           <button className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition-colors">
@@ -143,7 +143,7 @@ export function RightPanel() {
     <>
       {showRightPanel && (
         <div 
-          className="md:hidden fixed inset-0 bg-black/50 z-40"
+          className="md:hidden fixed inset-0 bg-black/50 z-40 "
           onClick={() => setShowRightPanel(false)}
         />
       )}
@@ -153,8 +153,8 @@ export function RightPanel() {
         data-right-panel="true"
         className={`
           fixed top-16 right-0 bg-gray-800 border-l border-gray-700 h-[calc(100vh-4rem)] 
-          flex flex-col transform transition-transform duration-300 ease-in-out z-50
-          md:w-64 w-3/4
+          flex flex-col transform transition-transform duration-300 ease-in-out z-50 
+          md:w-64 w-3/4 
           ${showRightPanel ? 'translate-x-0' : 'translate-x-full'}
         `}
       >
@@ -181,6 +181,7 @@ export function RightPanel() {
 
           <div className="p-4">
             <div className="space-y-2">
+              
               {Array(3).fill(leaderboardData).flat().map((player, index) => (
                 <div 
                   key={`${player.username}-${index}`}
