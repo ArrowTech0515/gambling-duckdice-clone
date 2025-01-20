@@ -72,6 +72,7 @@ export function RightPanel() {
     window.addEventListener('resize', handleResize);
     const mainElement = document.querySelector('main');
     mainElement?.addEventListener('scroll', handleMainScroll);
+    console.log(isMobile.valueOf())
   
     return () => {
       clearInterval(timer);

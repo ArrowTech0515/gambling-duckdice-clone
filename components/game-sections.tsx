@@ -6,37 +6,37 @@ export function GameSections() {
     {
       name: 'Dice',
       description: 'Classic dice game with multipliers',
-      image: '/placeholder.svg?height=200&width=300&text=Dice+Game',
+      image: 'http://localhost:3000/_next/image?url=https%3A%2F%2Fwww.shutterstock.com%2Fshutterstock%2Fphotos%2F2491656925%2Fdisplay_1500%2Fstock-photo-coins-cryptocurrency-and-online-trading-statistics-value-and-international-commerce-for-finance-2491656925.jpg&w=1920&q=75',
       color: 'from-purple-600 to-purple-900'
     },
     {
       name: 'Crash',
       description: 'Watch the multiplier grow until it crashes',
-      image: '/placeholder.svg?height=200&width=300&text=Crash+Game',
+      image: 'https://www.shutterstock.com/shutterstock/photos/2491656925/display_1500/stock-photo-coins-cryptocurrency-and-online-trading-statistics-value-and-international-commerce-for-finance-2491656925.jpg',
       color: 'from-red-600 to-red-900'
     },
     {
       name: 'Plinko',
       description: 'Drop the ball and watch it bounce',
-      image: '/placeholder.svg?height=200&width=300&text=Plinko',
+      image: 'https://www.shutterstock.com/shutterstock/photos/2491656925/display_1500/stock-photo-coins-cryptocurrency-and-online-trading-statistics-value-and-international-commerce-for-finance-2491656925.jpg',
       color: 'from-blue-600 to-blue-900'
     },
     {
       name: 'Mines',
       description: 'Avoid the mines and collect gems',
-      image: '/placeholder.svg?height=200&width=300&text=Mines',
+      image: 'https://www.shutterstock.com/shutterstock/photos/2491656925/display_1500/stock-photo-coins-cryptocurrency-and-online-trading-statistics-value-and-international-commerce-for-finance-2491656925.jpg',
       color: 'from-green-600 to-green-900'
     },
     {
       name: 'Wheel',
       description: 'Spin the wheel of fortune',
-      image: '/placeholder.svg?height=200&width=300&text=Wheel',
+      image: 'https://www.shutterstock.com/shutterstock/photos/2491656925/display_1500/stock-photo-coins-cryptocurrency-and-online-trading-statistics-value-and-international-commerce-for-finance-2491656925.jpg',
       color: 'from-yellow-600 to-yellow-900'
     },
     {
       name: 'Blackjack',
       description: 'Classic casino card game',
-      image: '/placeholder.svg?height=200&width=300&text=Blackjack',
+      image: 'https://www.shutterstock.com/shutterstock/photos/2491656925/display_1500/stock-photo-coins-cryptocurrency-and-online-trading-statistics-value-and-international-commerce-for-finance-2491656925.jpg',
       color: 'from-pink-600 to-pink-900'
     }
   ]
@@ -89,7 +89,7 @@ export function GameSections() {
               <Image
                 src={game.image || "/placeholder.svg"}
                 alt={game.name}
-                fill
+                layout="fill"
                 className="object-cover group-hover:scale-110 transition-transform duration-300"
               />
               <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300" />
