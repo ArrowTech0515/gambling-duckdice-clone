@@ -296,6 +296,7 @@ export function NavBar() {
         <div className="flex items-center space-x-4">
           <button
             onClick={toggleSidebar}
+            data-sidebar-toggle="true"
             className="p-2 rounded-lg hover:bg-gray-700/70 transition-colors duration-200"
           >
             {isCollapsed ? <ListVideo className="w-6 h-6" /> : <ListPlus className="w-6 h-6" />}

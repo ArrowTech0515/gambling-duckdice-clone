@@ -17,7 +17,7 @@ export default function RootLayout({
         <SidebarProvider>
           <div className="min-h-screen bg-gray-900 flex flex-col">
             <NavBar />
-            <div className="flex flex-1 overflow-hidden">
+            <div className="flex flex-1 overflow-hidden relative">
               <SideBar />
               <main className="flex-1 overflow-y-auto transition-all duration-300">
                 {children}

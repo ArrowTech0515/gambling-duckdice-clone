@@ -20,26 +20,18 @@ import {
   Linkedin,
 } from "lucide-react";
 import { useSidebar } from "../context/SidebarContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export function SideBar() {
-  const { isCollapsed, toggleSidebar } = useSidebar();
+  const { isCollapsed, toggleSidebar, isMobile } = useSidebar();
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [isShareTooltipVisible, setIsShareTooltipVisible] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
-  
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const menuItems = [
@@ -73,7 +65,7 @@ export function SideBar() {
   };
 
   const handleShareClick = () => {
-    setIsShareTooltipVisible((prev:any) => !prev); // Toggle share tooltip visibility
+    setIsShareTooltipVisible(!isShareTooltipVisible);
   };
 
   if (!isMounted) return null;
@@ -82,11 +74,13 @@ export function SideBar() {
     <>
       {/* Sidebar */}
       <aside
+        ref={sidebarRef}
+        data-sidebar="true"
         className={`fixed top-16 left-0 h-[calc(100vh-4rem)]
           ${isCollapsed ? "w-16" : "w-64"} 
           bg-gray-800 text-gray-300
           transform transition-all duration-300 ease-in-out
-          ${isCollapsed ? "-translate-x-full lg:translate-x-0" : "translate-x-0"}
+          ${isMobile ? (isCollapsed ? "-translate-x-full" : "translate-x-0") : "translate-x-0"}
           z-40 overflow-y-auto`}
       >
         <div className="h-full flex flex-col justify-between py-4">
@@ -141,29 +135,15 @@ export function SideBar() {
                 )}
               </div>
             ))}
-            {/* Share Tooltip */}
-            {isShareTooltipVisible && (
-              <div
-                className="absolute left-[100px] top-[75%] -translate-y-1/2 ml-2 p-2 bg-transparent bg-opacity-80 text-white border border-gray-600 rounded-full
-                            flex flex-row items-start gap-2 shadow-lg z-50"
-              >
-                <button className="p-2 rounded-full hover:bg-gray-700 transition border border-gray-700">
-                  <Facebook className="w-5 h-5 text-blue-500" />
-                </button>
-                <button className="p-2 rounded-full hover:bg-gray-700 transition border border-gray-700">
-                  <Twitter className="w-5 h-5 text-sky-400" />
-                </button>
-                <button className="p-2 rounded-full hover:bg-gray-700 transition border border-gray-700">
-                  <Linkedin className="w-5 h-5 text-blue-700" />
-                </button>
-              </div>
-            )}
           </div>
-          {/* Collapse Button */}
+
+          {/* Collapse Button - Only show on desktop */}
           {!isMobile && (
             <button
+              ref={toggleButtonRef}
               onClick={toggleSidebar}
               className="absolute bottom-4 right-2 bg-gray-700 hover:bg-gray-600 rounded-full p-1.5 transition-colors duration-200"
+              data-sidebar-toggle="true"
             >
               {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
             </button>
@@ -172,13 +152,30 @@ export function SideBar() {
       </aside>
 
       {/* Mobile Toggle Button */}
-      {isMobile && (
+      {/* {isMobile && (
         <button
+          ref={toggleButtonRef}
           onClick={toggleSidebar}
           className="fixed top-20 left-4 bg-gray-700 hover:bg-gray-600 text-white rounded-full p-2 z-50"
+          data-sidebar-toggle="true"
         >
           {isCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
         </button>
+      )} */}
+
+      {/* Share Tooltip */}
+      {isShareTooltipVisible && (
+        <div className="fixed left-[100px] top-[75%] -translate-y-1/2 ml-2 p-2 bg-gray-800 bg-opacity-80 text-white border border-gray-600 rounded-full flex flex-row items-start gap-2 shadow-lg z-50">
+          <button className="p-2 rounded-full hover:bg-gray-700 transition border border-gray-700">
+            <Facebook className="w-5 h-5 text-blue-500" />
+          </button>
+          <button className="p-2 rounded-full hover:bg-gray-700 transition border border-gray-700">
+            <Twitter className="w-5 h-5 text-sky-400" />
+          </button>
+          <button className="p-2 rounded-full hover:bg-gray-700 transition border border-gray-700">
+            <Linkedin className="w-5 h-5 text-blue-700" />
+          </button>
+        </div>
       )}
     </>
   );
