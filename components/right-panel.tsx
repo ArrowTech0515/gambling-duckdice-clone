@@ -28,58 +28,63 @@ export function RightPanel() {
   const { showRightPanel, setShowRightPanel } = useSidebar()
   const [currentTime, setCurrentTime] = useState("08h:50m:15s")
   const [showFullContent, setShowFullContent] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const now = new Date()
-      const hours = String(now.getHours()).padStart(2, '0')
-      const minutes = String(now.getMinutes()).padStart(2, '0')
-      const seconds = String(now.getSeconds()).padStart(2, '0')
-      setCurrentTime(`${hours}h:${minutes}m:${seconds}s`)
-    }, 1000)
-
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      setCurrentTime(`${hours}h:${minutes}m:${seconds}s`);
+    }, 1000);
+  
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        panelRef.current && 
-        !panelRef.current.contains(event.target as Node) && 
+        panelRef.current &&
+        !panelRef.current.contains(event.target as Node) &&
         !(event.target as Element).closest('[data-settings-button="true"]')
       ) {
-        setShowRightPanel(false)
+        setShowRightPanel(false);
       }
-    }
-
+    };
+  
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setShowRightPanel(false)
+        setIsMobile(true);
+      } else {
+        setIsMobile(false);
       }
-    }
-
+    };
+  
     const handleMainScroll = () => {
-      setShowRightPanel(false)
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    window.addEventListener('resize', handleResize)
-    const mainElement = document.querySelector('main')
-    mainElement?.addEventListener('scroll', handleMainScroll)
-
-    handleResize()
-
+      // Close the panel only if it's open and not actively being used
+      if (showRightPanel) {
+        setShowRightPanel(false);
+      }
+    };
+  
+    // Add event listeners
+    document.addEventListener('mousedown', handleClickOutside);
+    window.addEventListener('resize', handleResize);
+    const mainElement = document.querySelector('main');
+    mainElement?.addEventListener('scroll', handleMainScroll);
+  
     return () => {
-      clearInterval(timer)
-      document.removeEventListener('mousedown', handleClickOutside)
-      window.removeEventListener('resize', handleResize)
-      mainElement?.removeEventListener('scroll', handleMainScroll)
-    }
-  }, [setShowRightPanel])
-
+      clearInterval(timer);
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('resize', handleResize);
+      mainElement?.removeEventListener('scroll', handleMainScroll);
+    };
+  }, [showRightPanel]);
+  
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const scrollTop = (e.target as HTMLDivElement).scrollTop
-    setShowFullContent(scrollTop < 10)
-  }
+    const scrollTop = (e.target as HTMLDivElement).scrollTop;
+    setShowFullContent(scrollTop < 10);
+  };
 
   const topContent = (
     <div className={`transition-all duration-500 ease-in-out ${showFullContent ? 'opacity-100 max-h-[600px]' : 'opacity-0 max-h-0 overflow-hidden'}`}>

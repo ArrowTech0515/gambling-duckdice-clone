@@ -32,7 +32,7 @@ export function SideBar() {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
+  
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024);
@@ -73,7 +73,7 @@ export function SideBar() {
   };
 
   const handleShareClick = () => {
-    setIsShareTooltipVisible((prev) => !prev); // Toggle share tooltip visibility
+    setIsShareTooltipVisible((prev:any) => !prev); // Toggle share tooltip visibility
   };
 
   if (!isMounted) return null;
