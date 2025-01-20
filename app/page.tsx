@@ -21,6 +21,7 @@ export default function Home() {
         <HeroSection />
         <CryptoTicker />
         <Jackpots />
+        {/* <GameSections /> */}
         <GameSections />
         <StatsCards />
         <Footer />

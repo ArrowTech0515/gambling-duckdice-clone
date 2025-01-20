@@ -1,14 +1,45 @@
-import { useState } from "react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export function GameSections() {
   const popularGames = [
-    { name: "Dice", description: "Classic dice game", color: "from-purple-600 to-purple-900" },
-    { name: "Crash", description: "Watch the multiplier grow", color: "from-red-600 to-red-900" },
-    { name: "Plinko", description: "Drop the ball", color: "from-blue-600 to-blue-900" },
-    { name: "Mines", description: "Avoid the mines", color: "from-green-600 to-green-900" },
-    { name: "Wheel", description: "Spin the wheel", color: "from-yellow-600 to-yellow-900" },
-    { name: "Blackjack", description: "Card game", color: "from-pink-600 to-pink-900" },
-  ];
+    {
+      name: 'Dice',
+      description: 'Classic dice game with multipliers',
+      image: '/placeholder.svg?height=200&width=300&text=Dice+Game',
+      color: 'from-purple-600 to-purple-900'
+    },
+    {
+      name: 'Crash',
+      description: 'Watch the multiplier grow until it crashes',
+      image: '/placeholder.svg?height=200&width=300&text=Crash+Game',
+      color: 'from-red-600 to-red-900'
+    },
+    {
+      name: 'Plinko',
+      description: 'Drop the ball and watch it bounce',
+      image: '/placeholder.svg?height=200&width=300&text=Plinko',
+      color: 'from-blue-600 to-blue-900'
+    },
+    {
+      name: 'Mines',
+      description: 'Avoid the mines and collect gems',
+      image: '/placeholder.svg?height=200&width=300&text=Mines',
+      color: 'from-green-600 to-green-900'
+    },
+    {
+      name: 'Wheel',
+      description: 'Spin the wheel of fortune',
+      image: '/placeholder.svg?height=200&width=300&text=Wheel',
+      color: 'from-yellow-600 to-yellow-900'
+    },
+    {
+      name: 'Blackjack',
+      description: 'Classic casino card game',
+      image: '/placeholder.svg?height=200&width=300&text=Blackjack',
+      color: 'from-pink-600 to-pink-900'
+    }
+  ]
 
   const generateRandomData = () =>
     Array.from({ length: 30 }, (_, i) => ({
@@ -20,6 +51,11 @@ export function GameSections() {
     }));
 
   const [data] = useState(generateRandomData());
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [activeFilter, setActiveFilter] = useState("Dice");
@@ -43,66 +79,84 @@ export function GameSections() {
 
   return (
     <div className="space-y-8 my-6">
+       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {popularGames.map((game) => (
+          <div 
+            key={game.name}
+            className={`relative group overflow-hidden rounded-xl bg-gradient-to-br ${game.color} transform hover:scale-105 transition-all duration-300`}
+          >
+            <div className="relative h-48 w-full">
+              <Image
+                src={game.image || "/placeholder.svg"}
+                alt={game.name}
+                fill
+                className="object-cover group-hover:scale-110 transition-transform duration-300"
+              />
+              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300" />
+            </div>
+            <div className="p-6">
+              <h3 className="text-2xl font-bold text-white mb-2">{game.name}</h3>
+              <p className="text-gray-200 mb-4">{game.description}</p>
+              <div className="flex items-center justify-between">
+                <button className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors">
+                  Play Now
+                </button>
+                <div className="text-white/80">
+                  <span className="text-sm">Current Players:</span>
+                  <span className="ml-2 font-bold animate-pulse">{mounted ? Math.floor(Math.random() * 1000) : '---'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+
       <div className="bg-gray-800 rounded-xl p-6 shadow-xl space-y-4">
         <h2 className="text-2xl font-bold text-white">Game Sections</h2>
 
-        <div className="flex justify-between items-center">
-          <div className="relative bg-gray-700/50 rounded-lg p-1">
-            <div className="flex relative z-10 gap-1">
+        {/* Filter Bar */}
+        <div className="flex flex-wrap justify-between gap-4 items-center">
+          <div className="relative bg-gray-700/50 rounded-lg p-1 w-full sm:w-auto">
+            <div className="flex gap-1 justify-center sm:justify-start">
               {["Dice", "Mines", "Wheel"].map((filter) => (
                 <button
                   key={filter}
                   onClick={() => handleFilterChange(filter)}
                   className={`
                     relative px-6 py-1 text-white rounded-md transition-all duration-300
-                    ${activeFilter === filter ? 'text-gray-800' : 'hover:text-gray-200'}
+                    ${activeFilter === filter ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-800 animate-pulse' : 'hover:text-gray-200'}
+                    ${activeFilter !== filter && 'transition-transform duration-500 transform hover:scale-105'}
                   `}
                 >
                   {filter}
                 </button>
               ))}
             </div>
-            <div
-              className="absolute inset-0 transition-all duration-500 ease-in-out"
-              style={{
-                transform: `translateX(${["Dice", "Mines", "Wheel"].indexOf(activeFilter) * 100}%)`,
-                width: '33.333333%',
-              }}
-            >
-              <div className="w-full h-full rounded-md bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-lg" />
-            </div>
           </div>
 
-          <div className="relative bg-gray-700/50 rounded-lg p-1">
-            <div className="flex relative z-10 gap-1">
-              {[10, 20].map((rows) => (
+          <div className="relative bg-gray-700/50 rounded-lg p-1 w-full sm:w-auto">
+            <div className="flex gap-1">
+              {[10, 20, 30].map((rows) => (
                 <button
                   key={rows}
                   onClick={() => handleRowsPerPageChange(rows)}
                   className={`
                     relative px-6 py-1 text-white rounded-md transition-all duration-300
-                    ${rowsPerPage === rows ? 'text-gray-800' : 'hover:text-gray-200'}
+                    ${rowsPerPage === rows ? 'bg-gradient-to-r from-green-400 to-green-500 text-gray-800' : 'hover:text-gray-200'}
                   `}
                 >
                   Show {rows}
                 </button>
               ))}
             </div>
-            <div
-              className="absolute inset-0 transition-all duration-500 ease-in-out"
-              style={{
-                transform: `translateX(${rowsPerPage === 10 ? '0%' : '100%'})`,
-                width: '50%',
-              }}
-            >
-              <div className="w-full h-full rounded-md bg-gradient-to-r from-green-400 to-green-500 shadow-lg" />
-            </div>
           </div>
         </div>
 
+        {/* Table */}
         <div className="transition-all duration-500 ease-in-out opacity-100">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left text-gray-400">
+            <table className="w-full text-sm text-left text-gray-400 table-fixed">
               <thead className="text-xs uppercase bg-gray-700 text-gray-400">
                 <tr>
                   {["game", "player", "bet", "multiplier", "profit"].map((col) => (
@@ -135,6 +189,7 @@ export function GameSections() {
           </div>
         </div>
 
+        {/* Pagination */}
         <div className="flex justify-between items-center mt-4">
           <span className="text-gray-400">
             Showing {rowsPerPage} rows per page (Filter: {activeFilter})
@@ -160,4 +215,4 @@ export function GameSections() {
       </div>
     </div>
   );
-}
+}   

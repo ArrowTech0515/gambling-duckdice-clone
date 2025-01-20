@@ -1,134 +1,140 @@
-"use client"
+"use client";
 
-import React, { createContext, useState, useContext, useEffect } from 'react'
+import React, { createContext, useState, useContext, useEffect } from "react";
 
 type SidebarContextType = {
-  isCollapsed: boolean
-  toggleSidebar: () => void
-  showRightPanel: boolean
-  setShowRightPanel: (show: boolean) => void
-  isMobile: boolean
-  isTablet: boolean
-}
+  isCollapsed: boolean;
+  toggleSidebar: () => void;
+  showRightPanel: boolean;
+  setShowRightPanel: (show: boolean) => void;
+  isModalOpen: boolean;
+  toggleModal: () => void;
+  isMobile: boolean;
+  isTablet: boolean;
+};
 
 const SidebarContext = createContext<SidebarContextType>({
   isCollapsed: false,
   toggleSidebar: () => {},
   showRightPanel: false,
   setShowRightPanel: () => {},
+  isModalOpen: false,
+  toggleModal: () => {},
   isMobile: false,
   isTablet: false,
-})
+});
 
-export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  const [showRightPanel, setShowRightPanel] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
-  const [isTablet, setIsTablet] = useState(false)
+export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [showRightPanel, setShowRightPanel] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
 
-  // Toggle sidebar state
   const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed)
-  }
+    setIsCollapsed(!isCollapsed);
+  };
 
-  // Load initial sidebar state
-  useEffect(() => {
-    const storedState = localStorage.getItem('sidebarCollapsed')
-    if (storedState) {
-      setIsCollapsed(JSON.parse(storedState))
-    }
-  }, [])
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
 
-  // Save sidebar state
-  useEffect(() => {
-    localStorage.setItem('sidebarCollapsed', JSON.stringify(isCollapsed))
-  }, [isCollapsed])
-
-  // Handle responsive behavior
   useEffect(() => {
     const handleResize = () => {
-      const width = window.innerWidth
-      const mobile = width < 768 // md breakpoint
-      const tablet = width >= 768 && width < 1024 // lg breakpoint
+      const width = window.innerWidth;
+      const mobile = width < 768;
+      const tablet = width >= 768 && width < 1024;
 
-      setIsMobile(mobile)
-      setIsTablet(tablet)
+      setIsMobile(mobile);
+      setIsTablet(tablet);
 
-      // Auto-collapse sidebar on mobile/tablet
-      if ((mobile || tablet) && !isCollapsed) {
-        setIsCollapsed(true)
+      if ((mobile || tablet) && window.innerWidth < 1024 && !isCollapsed) {
+        setIsCollapsed(false);
       }
 
-      // Auto-close right panel on resize for both mobile and tablet
       if ((mobile || tablet) && showRightPanel) {
-        setShowRightPanel(false)
+        setShowRightPanel(true);
       }
-    }
+    };
 
-    // Initial check
-    handleResize()
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isCollapsed, showRightPanel]);
 
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [isCollapsed, showRightPanel])
-
-  // Handle clicks outside panels
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement
-      const isRightPanelClick = target.closest('[data-settings-button="true"]')
-      const isRightPanel = target.closest('[data-right-panel="true"]')
-      const isSidebarClick = target.closest('[data-sidebar-toggle="true"]')
-      const isSidebar = target.closest('[data-sidebar="true"]')
+      const target = event.target as HTMLElement;
 
-      // Close right panel if clicking outside (for all viewport sizes)
-      if (showRightPanel && !isRightPanelClick && !isRightPanel) {
-        setShowRightPanel(false)
+      // Check if click is inside modal or modal trigger
+      const isModalClick = target.closest('[data-modal="true"]');
+      const isModalTrigger = target.closest('[data-modal-trigger="true"]');
+
+      if (isModalClick || isModalTrigger) {
+        return;
       }
 
-      // Collapse sidebar on mobile/tablet if clicking outside
-      if ((isMobile || isTablet) && !isCollapsed && !isSidebarClick && !isSidebar) {
-        setIsCollapsed(true)
-      }
-    }
+      // Handle sidebar and right panel clicks
+      const isSidebarClick =
+        target.closest('[data-sidebar="true"]') ||
+        target.closest('[data-sidebar-toggle="true"]');
+      const isRightPanelClick =
+        target.closest('[data-right-panel="true"]') ||
+        target.closest('[data-settings-button="true"]');
 
-    // Handle escape key press to close right panel
+      // Only close panels if clicking outside
+      if (!isSidebarClick && !isRightPanelClick && (isMobile || isTablet)) {
+        setIsCollapsed(true);
+        setShowRightPanel(false);
+      }
+
+      // Only close modal if explicitly clicking outside modal
+      if (!isModalClick && !isModalTrigger && isModalOpen) {
+        setIsModalOpen(false);
+      }
+    };
+
     const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && showRightPanel) {
-        setShowRightPanel(false)
+      if (event.key === "Escape") {
+        if (showRightPanel) {
+          setShowRightPanel(false);
+        }
+        if (!isCollapsed && (isMobile || isTablet)) {
+          setIsCollapsed(true);
+        }
+        if (isModalOpen) {
+          setIsModalOpen(false);
+        }
       }
-    }
+    };
 
-    // Handle scroll on main content
-    const handleMainScroll = () => {
-      if (showRightPanel) {
-        setShowRightPanel(false)
-      }
-    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscKey);
 
-    document.addEventListener('mousedown', handleClickOutside)
-    document.addEventListener('keydown', handleEscKey)
-    document.querySelector('main')?.addEventListener('scroll', handleMainScroll)
-    
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-      document.removeEventListener('keydown', handleEscKey)
-      document.querySelector('main')?.removeEventListener('scroll', handleMainScroll)
-    }
-  }, [isMobile, isTablet, isCollapsed, showRightPanel])
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [isMobile, isTablet, isCollapsed, showRightPanel, isModalOpen]);
 
   return (
-    <SidebarContext.Provider value={{
-      isCollapsed,
-      toggleSidebar,
-      showRightPanel,
-      setShowRightPanel,
-      isMobile,
-      isTablet,
-    }}>
+    <SidebarContext.Provider
+      value={{
+        isCollapsed,
+        toggleSidebar,
+        showRightPanel,
+        setShowRightPanel,
+        isModalOpen,
+        toggleModal,
+        isMobile,
+        isTablet,
+      }}
+    >
       {children}
     </SidebarContext.Provider>
-  )
-}
+  );
+};
 
-export const useSidebar = () => useContext(SidebarContext)
+export const useSidebar = () => useContext(SidebarContext);
